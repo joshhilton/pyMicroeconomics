@@ -1,13 +1,13 @@
 [build-system]
-requires = ["flit_core >=2,<4"]
+requires = ["flit_core>=3.2"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name =  "py-project-toml"
+name =  "pyMicroeconomics"
 authors = [
-    {name = "Daniel Ciborowski", email = "dciborow@microsoft.com"},
+    {name = "Josh Hilton", email = "jhilton@wayne.edu"},
 ]
-description = "Sample Python Project for creating a new Python Module"
+description = "Functions for microenomic analysis"
 readme = "README.md"
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -21,6 +21,14 @@ classifiers = [
 ]
 requires-python = ">=3.8.1"
 dynamic = ["version"]
+dependencies = [
+    "sympy>=1.13",
+    "numpy>=2.1.2",
+    "scipy>=1.14",
+    "IPython>=8.28",
+    "matplotlib>=3.9",
+    "ipywidgets>=8.1.5"
+]
 
 [project.optional-dependencies]
 spark = [
@@ -52,7 +60,7 @@ Source = "https://github.com/microsoft/python-package-template"
 Tracker = "https://github.com/microsoft/python-package-template/issues"
 
 [tool.flit.module]
-name = "python_package"
+name = "pyMicroeconomics"
 
 [tool.bandit]
 exclude_dirs = ["build","dist","tests","scripts"]
@@ -313,3 +321,4 @@ overgeneral-exceptions= [
     "BaseException",
     "Exception"
 ]
+
