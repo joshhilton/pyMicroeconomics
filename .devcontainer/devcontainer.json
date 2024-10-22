@@ -1,11 +1,11 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.222.0/containers/python-3-miniconda
 {
 	"name": "Python Environment",
 	"build": {
 		"dockerfile": "Dockerfile",
 		"context": ".."
 	},
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/pyMicroeconomics,type=bind",
+	"workspaceFolder": "/workspaces/pyMicroeconomics",
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -40,5 +40,6 @@
 			}
 		}
 	},
+	"postCreateCommand": "python -m flit install --deps develop",
 	"onCreateCommand": "pre-commit install-hooks"
 }
