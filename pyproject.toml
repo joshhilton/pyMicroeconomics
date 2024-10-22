@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "pyMicroeconomics"
-authors = [{ name = "Josh Hilton", email = "jhilton@wayne.edu" }]
+authors = [{ name = "J H", email = "jhilton@wayne.edu" }]
 description = "Functions for microeconomic analysis"
 readme = "README.md"
 classifiers = [
