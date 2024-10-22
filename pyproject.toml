@@ -18,7 +18,8 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 requires-python = ">=3.8.1"
-dynamic = ["version"]
+#dynamic = ["version"]
+version = "0.0.3"
 dependencies = [
     "sympy>=1.13",
     "numpy>=2.1.2",
