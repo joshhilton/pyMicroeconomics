@@ -1,14 +1,12 @@
-# Market Equilibrium Analysis
+# Overview
 
-pyMicroeconomics is package for symbolic analysis and visualization of market equilibrium conditions with various supply and demand curve specifications.
+pyMicroeconomics is package for symbolic analysis and visualization of market equilibrium conditions with various supply and demand curve specifications. This is a wrapper of several packages such as Sympy and Matplotlib. When used interactively, it allows you to build a market equilibrium in an iterative way, starting from the demand and supply functions.
 
-## Overview
-
-This package provides tools for:
-- Defining different types of supply and demand curves (linear, power, exponential, quadratic)
-- Calculating market equilibrium points
-- Computing consumer and producer surplus
-- Visualizing market equilibrium with interactive plots
+Uses:
+- Define different types of supply and demand curves (linear, power, exponential, quadratic)
+- Calculate market equilibrium points
+- Compute consumer and producer surplus
+- Visualize market equilibrium with interactive plots
 
 ## Installation
 
@@ -16,15 +14,7 @@ This package provides tools for:
 pip install pyMicroeconomics
 ```
 
-## Requirements
-
-- Python 3.x
-- SymPy
-- NumPy
-- Matplotlib
-- IPython
-- ipywidgets
-- SciPy
+This package is designed to be used interactively in a Jupyter Notebook.
 
 ## Usage Examples
 
@@ -41,20 +31,20 @@ supply = linear_supply(c_param=20, d_param=3)   # q = 20 + 3p
 results = market_equilibrium(demand, supply)
 
 # Display results
-from market_equilibrium import display_equilibrium_results
-display_equilibrium_results(results)
+from market_equilibrium import display_equilibrium
+display_equilibrium(results)
 ```
 
 ### Interactive Plotting
 
 ```python
-from market_equilibrium import plot_market_equilibrium
+from market_equilibrium import plot_equilibrium
 
 # Create interactive plot with adjustable parameters
-plot_market_equilibrium(results)
+plot_equilibrium(results)
 ```
 
-## Supported Curve Types
+## Example Functions
 
 ### Demand Curves
 - Linear: $q = a - b p$
