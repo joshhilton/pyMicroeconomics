@@ -7,6 +7,8 @@ from __future__ import annotations
 
 __version__ = "0.0.2"
 
+from .equation_types import TypedEquation
+
 from .demand import (
     linear_demand,
     power_demand,
@@ -22,6 +24,10 @@ from .supply import (
 )
 
 from .equilibrium import market_equilibrium
-from .display import display_equilibrium_results
+from .display import display_equilibrium
+
 # from .optimization import optimize_parameters
-from .plotting import plot_market_equilibrium
+from .plotting import plot_equilibrium
+
+if __name__ == "__main__":
+    test_market_equilibrium()

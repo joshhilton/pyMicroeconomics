@@ -2,46 +2,32 @@
 
 import sympy as sp
 from .symbols import p, q, a, b
+from .equation_types import TypedEquation
 
 
 def linear_demand(a_param=None, b_param=None):
-    """Create linear demand curve equation: q = a - b*p
-
-    Args:
-        a_param: Intercept parameter (default: symbolic 'a')
-        b_param: Slope parameter (default: symbolic 'b')
-
-    Returns:
-        sympy.Eq: Linear demand equation
-    """
+    """Create linear demand curve equation: q = a - b*p"""
     if a_param is None:
         a_param = a
     if b_param is None:
         b_param = b
-    return sp.Eq(q, a_param - b_param * p)
+    eq = sp.Eq(q, a_param - b_param * p)
+    return TypedEquation(eq, "linear_demand")
 
 
 def power_demand(a_param=None, b_param=None):
-    """Create power demand curve equation: q = exp(a)*p**b.
-    This is equivalent to log-log form ln(q) = a + b*ln(p), which is common in econometrics.
-
-    Args:
-        a_param: Scale parameter (default: symbolic 'a')
-        b_param: Price elasticity of demand (default: symbolic 'b')
-
-    Returns:
-        sympy.Eq: Power demand equation
-    """
+    """Create power demand curve equation: q = a*p^b"""
     if a_param is None:
         a_param = a
     if b_param is None:
         b_param = b
-    return sp.Eq(q, a_param * p**b_param)
+    eq = sp.Eq(q, a_param * p**b_param)
+    return TypedEquation(eq, "power_demand")
 
 
 def exponential_demand(a_param=None, b_param=None):
-    """Create exponential demand curve equation: q = exp(a*p+b).
-    This is equivalent to the semi-log form ln(q) = a*p + b, which is common in econometrics.
+    """Create exponential demand curve equation: q = exp(-a*p+b).
+    This is equivalent to the semi-log form ln(q) = -a*p + b, which is common in econometrics.
 
     Args:
         a_param: Intercept parameter (default: symbolic 'a')
@@ -54,7 +40,8 @@ def exponential_demand(a_param=None, b_param=None):
         a_param = a
     if b_param is None:
         b_param = b
-    return sp.Eq(q, sp.exp(a_param * p + b_param))
+    eq = sp.Eq(q, sp.exp(-a_param * p + b_param))
+    return TypedEquation(eq, "exponential_demand")
 
 
 def quadratic_demand(a_param=None, b_param=None):
@@ -71,4 +58,5 @@ def quadratic_demand(a_param=None, b_param=None):
         a_param = a
     if b_param is None:
         b_param = b
-    return sp.Eq(q, a_param - b_param * p**2)
+    eq = sp.Eq(q, a_param - b_param * p**2)
+    return TypedEquation(eq, "quadratic_demand")

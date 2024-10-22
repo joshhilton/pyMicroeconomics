@@ -4,7 +4,7 @@ import sympy as sp
 from IPython.display import display, HTML, Math
 
 
-def display_equilibrium_results(equilibrium_results, parameter_subs=None):
+def display_equilibrium(equilibrium_results, parameter_subs=None):
     """
     Display the equilibrium results in an HTML table.
 
@@ -43,14 +43,9 @@ def display_equilibrium_results(equilibrium_results, parameter_subs=None):
     display(
         HTML(
             """
-        <table style="border-collapse: collapse; width: auto; margin-top: 10px;">
-            <thead>
-                <tr style="background-color: #f2f2f2;">
-                    <th style="border: 1px solid black; padding: 8px; text-align: left;">Parameter</th>
-                    <th style="border: 1px solid black; padding: 8px; text-align: left;">Value</th>
-                </tr>
-            </thead>
-        </table>
+    <div style="margin: 20px;">
+        <h3 style="text-align: center; margin-bottom: 15px;">Market Equilibrium Results</h3>
+        <table style="border-collapse: collapse; width: 100%; margin: auto;">
     """
         )
     )
@@ -66,7 +61,7 @@ def display_equilibrium_results(equilibrium_results, parameter_subs=None):
         "Inverse Demand Function",
     ]
 
-    # Display each row separately
+    # Display each row separately to allow Math rendering
     for key in display_order:
         if key in formatted_results:
             value = formatted_results[key]
@@ -74,9 +69,11 @@ def display_equilibrium_results(equilibrium_results, parameter_subs=None):
             display(
                 HTML(
                     f"""
-                <tr>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center; font-size: 18px;">{key}</td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center; font-size: 18px;">
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px; text-align: right; width: 40%; font-weight: bold; color: #444;">
+                        {key}:
+                    </td>
+                    <td style="padding: 12px; text-align: left;">
             """
                 )
             )
@@ -87,5 +84,12 @@ def display_equilibrium_results(equilibrium_results, parameter_subs=None):
             # Display row end
             display(HTML("</td></tr>"))
 
-    # Display table end
-    display(HTML("</table>"))
+    # Close table
+    display(
+        HTML(
+            """
+        </table>
+    </div>
+    """
+        )
+    )

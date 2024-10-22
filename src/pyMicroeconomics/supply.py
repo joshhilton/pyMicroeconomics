@@ -2,6 +2,7 @@
 
 import sympy as sp
 from .symbols import p, q, c, d
+from .equation_types import TypedEquation
 
 
 def linear_supply(c_param=None, d_param=None):
@@ -18,7 +19,8 @@ def linear_supply(c_param=None, d_param=None):
         c_param = c
     if d_param is None:
         d_param = d
-    return sp.Eq(q, c_param + d_param * p)
+    eq = sp.Eq(q, c_param + d_param * p)
+    return TypedEquation(eq, "linear_supply")
 
 
 def power_supply(c_param=None, d_param=None):
@@ -36,7 +38,8 @@ def power_supply(c_param=None, d_param=None):
         c_param = c
     if d_param is None:
         d_param = d
-    return sp.Eq(q, c_param * p**d_param)
+    eq = sp.Eq(q, c_param * p**d_param)
+    return TypedEquation(eq, "power_supply")
 
 
 def exponential_supply(c_param=None, d_param=None):
@@ -54,7 +57,8 @@ def exponential_supply(c_param=None, d_param=None):
         c_param = c
     if d_param is None:
         d_param = d
-    return sp.Eq(q, sp.exp(c_param * p + d_param))
+    eq = sp.Eq(q, sp.exp(c_param * p + d_param))
+    return TypedEquation(eq, "exponential_supply")
 
 
 def quadratic_supply(c_param=None, d_param=None):
@@ -71,4 +75,5 @@ def quadratic_supply(c_param=None, d_param=None):
         c_param = c
     if d_param is None:
         d_param = d
-    return sp.Eq(q, c_param + d_param * p**2)
+    eq = sp.Eq(q, c_param + d_param * p**2)
+    return TypedEquation(eq, "quadratic_supply")
