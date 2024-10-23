@@ -4,42 +4,30 @@
 		"dockerfile": "Dockerfile",
 		"context": ".."
 	},
-	"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/pyMicroeconomics,type=bind",
-	"workspaceFolder": "/workspaces/pyMicroeconomics",
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"editorconfig.editorconfig",
-				"github.vscode-pull-request-github",
-				"ms-azuretools.vscode-docker",
 				"ms-python.python",
 				"ms-python.vscode-pylance",
-				"ms-python.pylint",
-				"ms-python.isort",
-				"ms-python.flake8",
 				"ms-python.black-formatter",
-				"ms-vsliveshare.vsliveshare",
-				"ryanluker.vscode-coverage-gutters",
-				"bungcip.better-toml",
-				"GitHub.copilot"
+				"ms-python.isort",
+				"GitHub.copilot",
+				"ms-toolsai.jupyter",
+				"ms-toolsai.jupyter-renderers",
+				"njpwerner.autodocstring"
 			],
 			"settings": {
 				"python.defaultInterpreterPath": "/usr/local/bin/python",
-				"black-formatter.path": [
-					"/usr/local/py-utils/bin/black"
-				],
-				"pylint.path": [
-					"/usr/local/py-utils/bin/pylint"
-				],
-				"flake8.path": [
-					"/usr/local/py-utils/bin/flake8"
-				],
-				"isort.path": [
-					"/usr/local/py-utils/bin/isort"
-				]
+				"editor.formatOnSave": true,
+				"editor.codeActionsOnSave": {
+					"source.organizeImports": "explicit"
+				},
+				"python.testing.pytestEnabled": true
 			}
 		}
 	},
-	"postCreateCommand": "python -m flit install --deps develop",
-	"onCreateCommand": "pre-commit install-hooks"
+	"postCreateCommand": "python -m pip install flit && python -m flit install --deps develop",
+	"remoteEnv": {
+		"PYTHONPATH": "${workspaceFolder}/src"
+	}
 }

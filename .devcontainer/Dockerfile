@@ -1,14 +1,23 @@
-FROM mcr.microsoft.com/devcontainers/python:3
+FROM mcr.microsoft.com/devcontainers/python:3.10
 
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    FLIT_ROOT_INSTALL=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python packages
 RUN python -m pip install --upgrade pip \
-    && python -m pip install 'flit>=3.8.0' pre-commit
+    && python -m pip install \
+    flit>=3.8.0 \
+    pre-commit \
+    ipykernel \
+    jupyter
 
-ENV FLIT_ROOT_INSTALL=1
-
-# COPY pyproject.toml .
-# RUN touch README.md \
-#     && mkdir -p src/python_package \
-#     && python -m flit install --only-deps --deps develop \
-#     && rm -r pyproject.toml README.md src
-
+# Set correct working directory and Python path
 WORKDIR /workspaces/pyMicroeconomics
+ENV PYTHONPATH=/workspaces/pyMicroeconomics/src:$PYTHONPATH
