@@ -1,6 +1,6 @@
 from __future__ import annotations
+from typing import Dict, Optional
 import sympy as sp
-from typing import Optional, Dict
 from ...core.market_base import MarketFunction
 from ...core.symbols import p, q
 
@@ -14,34 +14,29 @@ def calculate_surpluses(
     """Calculate consumer and producer surplus."""
     try:
         # Get demand and supply expressions
-        demand_expr = sp.solve(demand.equation.equation, q)[0]
-        supply_expr = sp.solve(supply.equation.equation, q)[0]
+        demand_expr = sp.solve(demand.equation.equation, q)[0]  # q = a - bp
+        supply_expr = sp.solve(supply.equation.equation, q)[0]  # q = c + dp
 
-        # For consumer surplus, we need to solve for inverse demand (p in terms of q)
-        inverse_demand = sp.solve(sp.Eq(q, demand_expr), p)[0]
+        # Get inverse functions
+        inverse_demand = sp.solve(sp.Eq(q, demand_expr), p)[0]  # p = (a-q)/b
+        inverse_supply = sp.solve(sp.Eq(q, supply_expr), p)[0]  # p = (q-c)/d
 
-        # Consumer surplus: integrate from 0 to eq_quantity
-        price_area = sp.integrate(inverse_demand, (q, 0, eq_quantity))
-        expenditure = sp.Mul(eq_price, eq_quantity)
-        cs = sp.Add(price_area, sp.Mul(sp.Integer(-1), expenditure))
+        # Calculate consumer surplus
+        cs_integrand = inverse_demand - eq_price
+        cs = sp.integrate(cs_integrand, (q, 0, eq_quantity))
         cs = sp.simplify(cs)
 
-        # Producer surplus: integrate from 0 to eq_quantity
-        inverse_supply = sp.solve(sp.Eq(q, supply_expr), p)[0]
-        revenue = sp.Mul(eq_price, eq_quantity)
-        cost_area = sp.integrate(inverse_supply, (q, 0, eq_quantity))
-        ps = sp.Add(revenue, sp.Mul(sp.Integer(-1), cost_area))
+        # Calculate producer surplus
+        ps_integrand = eq_price - inverse_supply
+        ps = sp.integrate(ps_integrand, (q, 0, eq_quantity))
         ps = sp.simplify(ps)
 
         # Calculate total surplus
-        total = sp.Add(cs, ps)
+        total = cs + ps
         total = sp.simplify(total)
 
-        return {
-            "Consumer_Surplus": cs,
-            "Producer_Surplus": ps,
-            "Total_Surplus": total,
-        }
+        return {"Consumer_Surplus": cs, "Producer_Surplus": ps, "Total_Surplus": total}
 
-    except Exception:
+    except Exception as e:
+        print(f"Error in surplus calculation: {str(e)}")
         return {"Consumer_Surplus": None, "Producer_Surplus": None, "Total_Surplus": None}

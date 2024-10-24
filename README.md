@@ -18,45 +18,7 @@ This package is designed to be used interactively in a Jupyter Notebook.
 
 ## Usage Examples
 
-### Basic Market Equilibrium Analysis
-
-```python
-from market_equilibrium import linear_demand, linear_supply, market_equilibrium
-
-# Create demand and supply equations
-demand = linear_demand()
-supply = linear_supply(c_param=20, d_param=3)   # q = 20 + 3p
-
-# Calculate equilibrium
-results = market_equilibrium(demand, supply)
-
-# Display results
-from market_equilibrium import display_equilibrium
-display_equilibrium(results)
-```
-
-### Interactive Plotting
-
-```python
-from market_equilibrium import plot_equilibrium
-
-# Create interactive plot with adjustable parameters
-plot_equilibrium(results)
-```
-
-## Example Functions
-
-### Demand Curves
-- Linear: $q = a - b p$
-- Power: $q = exp(a)*p^b$
-- Exponential: $q = exp(ap + b)$
-- Quadratic: $q = a - b p^2$
-
-### Supply Curves
-- Linear: $q = c + d p$
-- Power: $q = exp(c) * p^d$
-- Exponential: $q = exp(c*p + d)$
-- Quadratic: $q = c + d p^2$
+Coming soon
 
 ## Contributing
 
