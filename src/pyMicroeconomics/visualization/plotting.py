@@ -1,20 +1,19 @@
 """Module for creating interactive market equilibrium plots with adjustable parameters."""
 
-import traceback
-from typing import Optional, Dict, Union, Any
+from typing import Optional
 import sympy as sp
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
-from ipywidgets import widgets
-from IPython.display import display
+from ipywidgets import widgets, Layout
+from IPython.display import display, HTML
 from ..core.symbols import p, q
 from ..market.equilibrium.types import EquilibriumResult
 
 
 def plot_equilibrium(equilibrium_results: Optional[EquilibriumResult]) -> None:
     """
-    Creates interactive plot for market equilibrium with surplus calculations.
+    Creates interactive plot for market equilibrium with adjustable parameters.
 
     Args:
         equilibrium_results: Dictionary containing equilibrium calculation results
@@ -23,130 +22,60 @@ def plot_equilibrium(equilibrium_results: Optional[EquilibriumResult]) -> None:
         print("Please provide valid equilibrium results.")
         return
 
-    demand_eq = equilibrium_results.get("Demand_Equation")
-    supply_eq = equilibrium_results.get("Supply_Equation")
-    demand_type = equilibrium_results.get("Demand_Type")
-    supply_type = equilibrium_results.get("Supply_Type")
-
-    # Get the symbolic surplus calculations
-    cs_symbolic = equilibrium_results.get("Consumer_Surplus")
-    ps_symbolic = equilibrium_results.get("Producer_Surplus")
-    total_surplus_symbolic = equilibrium_results.get("Total_Surplus")
-
-    if demand_eq is None or supply_eq is None:
-        print("Equilibrium results do not contain valid demand or supply equations.")
-        return
+    # Get equations and equilibrium values
+    demand_eq = equilibrium_results["Demand_Equation"]
+    supply_eq = equilibrium_results["Supply_Equation"]
+    eq_price = equilibrium_results["Equilibrium_Price"]
+    eq_quantity = equilibrium_results["Equilibrium_Quantity"]
 
     # Get all symbolic parameters
-    all_symbols = demand_eq.free_symbols.union(supply_eq.free_symbols) - {p, q}
+    all_symbols = (demand_eq.free_symbols | supply_eq.free_symbols) - {p, q}
 
-    # Define default values based on function type
-    demand_defaults: Dict[str, Dict[str, float]] = {
-        "linear_demand": {"a": 10.0, "b": 2.0},
-        "power_demand": {"a": 10.0, "b": 0.5},
-        "exponential_demand": {"a": 0.05, "b": 4.6},
-        "quadratic_demand": {"a": 100.0, "b": 0.04},
-    }
-
-    supply_defaults: Dict[str, Dict[str, float]] = {
-        "linear_supply": {"c": 0.0, "d": 2.0},
-        "power_supply": {"c": 1.0, "d": 1.5},
-        "exponential_supply": {"c": 0.05, "d": 0.0},
-        "quadratic_supply": {"c": 0.0, "d": 0.04},
-    }
-
-    default_values: Dict[str, float] = {}
-    if demand_type in demand_defaults:
-        default_values.update(demand_defaults[demand_type])
-    if supply_type in supply_defaults:
-        default_values.update(supply_defaults[supply_type])
-
-    param_inputs: Dict[str, widgets.FloatText] = {}
-    for symbol in sorted(all_symbols, key=str):
-        param_letter = str(symbol)
-        default_value = default_values.get(param_letter)
-        if default_value is None:
-            print(f"Warning: No default value found for parameter {param_letter}, using 1.0")
-            default_value = 1.0
-        param_inputs[param_letter] = widgets.FloatText(
-            value=default_value,
-            description=param_letter,
+    # Create parameter sliders
+    param_inputs = {
+        str(symbol): widgets.FloatSlider(
+            value=1.0,
+            min=0.1,
+            max=10.0,
+            step=0.1,
+            description=str(symbol),
+            continuous_update=False,
+            description_tooltip=f"Parameter {str(symbol)}",
+            layout=Layout(width="500px"),
             style={"description_width": "initial"},
         )
+        for symbol in sorted(all_symbols, key=str)
+    }
 
-    def update(**kwargs: float) -> None:
+    def update(**kwargs):
         """Update plot with new parameter values."""
         try:
-            # Create parameter substitutions dictionary
-            parameter_subs = {symbol: kwargs[str(symbol)] for symbol in all_symbols}
+            # Convert kwargs to parameter substitutions
+            params = {sp.Symbol(k): v for k, v in kwargs.items()}
 
-            # Get expressions for demand and supply
-            demand_q_expr = sp.solve(demand_eq, q)[0]
-            supply_q_expr = sp.solve(supply_eq, q)[0]
+            # Get expressions
+            demand_expr = sp.solve(demand_eq.equation, q)[0]
+            supply_expr = sp.solve(supply_eq.equation, q)[0]
+
+            # Substitute parameters in equilibrium values
+            eq_price_val = float(sp.N(eq_price.subs(params)))
+            eq_quantity_val = float(sp.N(eq_quantity.subs(params)))
+
+            # Create price range around equilibrium
+            p_max = min(eq_price_val * 2, 100)
+            p_values = np.linspace(0, p_max, 200)
 
             # Create lambda functions for curves
-            demand_func = sp.lambdify(p, demand_q_expr.subs(parameter_subs), modules=["numpy"])
-            supply_func = sp.lambdify(p, supply_q_expr.subs(parameter_subs), modules=["numpy"])
-
-            # Get equilibrium values from results and substitute parameters
-            eq_price_expr = equilibrium_results.get("Equilibrium_Price")
-            eq_quantity_expr = equilibrium_results.get("Equilibrium_Quantity")
-
-            if eq_price_expr is None or eq_quantity_expr is None:
-                print("Invalid equilibrium values found.")
-                return
-
-            eq_price = float(sp.N(eq_price_expr.subs(parameter_subs)))
-            eq_quantity = float(sp.N(eq_quantity_expr.subs(parameter_subs)))
-
-            if eq_price <= 0 or eq_quantity <= 0:
-                print("Invalid equilibrium with negative values found.")
-                return
-
-            # Calculate plot range
-            p_max = min(eq_price * 2, 1000)
-            p_min = 0
-            p_values = np.linspace(p_min, p_max, 400)
+            demand_func = sp.lambdify(p, demand_expr.subs(params))
+            supply_func = sp.lambdify(p, supply_expr.subs(params))
 
             # Calculate quantities
             q_demand = demand_func(p_values)
             q_supply = supply_func(p_values)
 
             # Filter valid points
-            valid_points = (q_demand >= 0) & (q_supply >= 0) & np.isfinite(q_demand) & np.isfinite(q_supply)
-            p_valid = p_values[valid_points]
-            q_demand_valid = q_demand[valid_points]
-            q_supply_valid = q_supply[valid_points]
-
-            if len(p_valid) == 0:
-                print("No valid points found for plotting.")
-                return
-
-            # Initialize surplus values
-            cs_text = "N/A"
-            ps_text = "N/A"
-            total_text = "N/A"
-
-            # Calculate surpluses using symbolic expressions
-            try:
-                if cs_symbolic is not None:
-                    cs = float(sp.N(cs_symbolic.subs(parameter_subs)))
-                    if cs > 0:  # Only update text if positive
-                        cs_text = f"{cs:.2f}"
-
-                if ps_symbolic is not None:
-                    ps = float(sp.N(ps_symbolic.subs(parameter_subs)))
-                    if ps > 0:  # Only update text if positive
-                        ps_text = f"{ps:.2f}"
-
-                if total_surplus_symbolic is not None:
-                    total_surplus = float(sp.N(total_surplus_symbolic.subs(parameter_subs)))
-                    if total_surplus > 0:  # Only update text if positive
-                        total_text = f"{total_surplus:.2f}"
-
-            except Exception as e:
-                print(f"Error calculating surpluses: {str(e)}")
-                # Variables retain their "N/A" values if an error occurs
+            valid_demand = (q_demand >= 0) & np.isfinite(q_demand)
+            valid_supply = (q_supply >= 0) & np.isfinite(q_supply)
 
             # Create plot
             plt.close("all")
@@ -155,76 +84,79 @@ def plot_equilibrium(equilibrium_results: Optional[EquilibriumResult]) -> None:
 
             # Main plot
             ax1 = plt.subplot(gs[0])
+            ax1.plot(q_demand[valid_demand], p_values[valid_demand], label="Demand", color="blue")
+            ax1.plot(q_supply[valid_supply], p_values[valid_supply], label="Supply", color="orange")
+            ax1.plot([eq_quantity_val], [eq_price_val], "ro", label="Equilibrium")
 
-            # Plot the curves
-            ax1.plot(q_demand_valid, p_valid, label="Demand", color="blue")
-            ax1.plot(q_supply_valid, p_valid, label="Supply", color="orange")
-            ax1.plot([eq_quantity], [eq_price], "ro", label="Equilibrium")
+            # Shade surplus areas
+            demand_idx = p_values <= eq_price_val
+            supply_idx = p_values >= eq_price_val
 
-            # Create masks for surplus shading
-            mask_d = p_valid >= eq_price
-            mask_s = p_valid <= eq_price
+            if all(valid_demand[demand_idx]) and all(valid_supply[supply_idx]):
+                # Consumer surplus
+                ax1.fill_betweenx(
+                    p_values[demand_idx],
+                    q_demand[demand_idx],
+                    eq_quantity_val,
+                    alpha=0.3,
+                    color="blue",
+                    label="Consumer Surplus",
+                )
 
-            # Shade surplus areas if they are valid
-            try:
-                if cs_text != "N/A":
-                    cs_value = float(cs_text)  # Safe to convert since we know it's not "N/A"
-                    if cs_value > 0:
-                        ax1.fill_between(
-                            q_demand_valid[mask_d],
-                            p_valid[mask_d],
-                            [eq_price] * np.sum(mask_d),
-                            alpha=0.3,
-                            color="blue",
-                            label="Consumer Surplus",
-                        )
-
-                if ps_text != "N/A":
-                    ps_value = float(ps_text)  # Safe to convert since we know it's not "N/A"
-                    if ps_value > 0:
-                        ax1.fill_between(
-                            q_supply_valid[mask_s],
-                            [eq_price] * np.sum(mask_s),
-                            p_valid[mask_s],
-                            alpha=0.3,
-                            color="orange",
-                            label="Producer Surplus",
-                        )
-            except ValueError as e:
-                print(f"Error shading surpluses: {str(e)}")
+                # Producer surplus
+                ax1.fill_betweenx(
+                    p_values[supply_idx],
+                    q_supply[supply_idx],
+                    eq_quantity_val,
+                    alpha=0.3,
+                    color="orange",
+                    label="Producer Surplus",
+                )
 
             # Plot formatting
             ax1.set_xlabel("Quantity")
             ax1.set_ylabel("Price")
-            ax1.set_ylim(bottom=0)
+            ax1.set_title("Market Equilibrium")
             ax1.grid(True)
+            ax1.set_ylim(bottom=0)
+            ax1.set_xlim(left=0)
 
             # Info panel
             ax2 = plt.subplot(gs[1])
             ax2.axis("off")
-            ax2.legend(*ax1.get_legend_handles_labels(), loc="upper center", bbox_to_anchor=(0.5, 1))
 
-            # Results text with guaranteed defined variables
-            calc_text = (
+            # Calculate surplus values
+            try:
+                cs = np.trapezoid(q_demand[demand_idx] - eq_quantity_val, p_values[demand_idx])
+                ps = np.trapezoid(eq_quantity_val - q_supply[supply_idx], p_values[supply_idx])
+                total_surplus = cs + ps
+                surplus_text = (
+                    f"Consumer Surplus: {cs:.2f}\n"
+                    f"Producer Surplus: {ps:.2f}\n"
+                    f"Total Surplus: {total_surplus:.2f}"
+                )
+            except:
+                surplus_text = "Surplus calculation error"
+
+            # Results text
+            results_text = (
                 f"Equilibrium Values:\n"
                 f"─────────────────\n"
-                f"Price: {eq_price:.2f}\n"
-                f"Quantity: {eq_quantity:.2f}\n\n"
-                f"Surplus Calculations:\n"
+                f"Price: {eq_price_val:.2f}\n"
+                f"Quantity: {eq_quantity_val:.2f}\n\n"
+                f"Surplus Values:\n"
                 f"─────────────────\n"
-                f"Consumer Surplus: {cs_text}\n"
-                f"Producer Surplus: {ps_text}\n"
-                f"Total Surplus: {total_text}\n\n"
+                f"{surplus_text}\n\n"
                 f"Function Types:\n"
                 f"─────────────────\n"
-                f"Demand: {demand_type}\n"
-                f"Supply: {supply_type}"
+                f"Demand: {equilibrium_results['Demand_Type']}\n"
+                f"Supply: {equilibrium_results['Supply_Type']}"
             )
 
             ax2.text(
                 0.1,
-                0.7,
-                calc_text,
+                0.9,
+                results_text,
                 transform=ax2.transAxes,
                 verticalalignment="top",
                 fontfamily="monospace",
@@ -236,9 +168,16 @@ def plot_equilibrium(equilibrium_results: Optional[EquilibriumResult]) -> None:
 
         except Exception as e:
             print(f"Error in plotting: {str(e)}")
-            traceback.print_exc()
             return
+
+    # Create widget layout
+    widgets_box = widgets.VBox(
+        [
+            widgets.HTML("<h3>Adjust Parameters:</h3>"),
+            widgets.VBox(list(param_inputs.values()), layout=Layout(padding="10px")),
+        ]
+    )
 
     # Create interactive widget
     out = widgets.interactive_output(update, param_inputs)
-    display(widgets.VBox([widgets.HTML("<h3>Adjust Parameters:</h3>"), widgets.VBox(list(param_inputs.values())), out]))
+    display(widgets.VBox([widgets_box, out]))

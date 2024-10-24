@@ -1,27 +1,35 @@
 from __future__ import annotations
-
 import sympy as sp
 from typing import Optional, Tuple
-from ...core.market_base import MarketFunction, ParameterDict
+from ...core.market_base import MarketFunction
 from ...core.symbols import p, q
 
 
-def validate_market_functions(
-    demand: MarketFunction, supply: MarketFunction, params: Optional[ParameterDict] = None
-) -> Tuple[bool, Optional[str]]:
+def validate_market_functions(demand: MarketFunction, supply: MarketFunction) -> Tuple[bool, Optional[str]]:
     """Validate market functions for economic consistency."""
     try:
-        # Check slopes at a test price point
-        test_price = 1.0
-        demand_slope = demand.get_slope(test_price, params)
-        supply_slope = supply.get_slope(test_price, params)
+        # Get derivatives symbolically
+        demand_slope = demand.get_slope()
+        supply_slope = supply.get_slope()
 
-        if demand_slope >= 0:
-            return False, "Demand curve must have negative slope"
-        if supply_slope <= 0:
-            return False, "Supply curve must have positive slope"
+        # Create a positive test point
+        test_p = sp.Symbol("test_p", positive=True)
 
-        return True, None
+        # Substitute and evaluate for signs
+        demand_eval = sp.simplify(demand_slope.subs(p, test_p))
+        supply_eval = sp.simplify(supply_slope.subs(p, test_p))
+
+        # Use sympy's relational operators and assumptions
+        demand_cond = sp.simplify(demand_eval <= 0)
+        supply_cond = sp.simplify(supply_eval >= 0)
+
+        # Check if the conditions are True under positive value assumption
+        if (demand_cond is sp.true or demand_cond.is_nonpositive) and (
+            supply_cond is sp.true or supply_cond.is_nonnegative
+        ):
+            return True, None
+
+        return False, "Invalid slopes for supply and demand curves"
 
     except Exception as e:
         return False, f"Validation error: {str(e)}"

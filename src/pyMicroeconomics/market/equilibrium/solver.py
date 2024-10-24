@@ -1,38 +1,37 @@
 from __future__ import annotations
-
 import sympy as sp
-from typing import Optional, Tuple
-from ...core.market_base import MarketFunction, ParameterDict
+from typing import Optional, Tuple, Union
+from ...core.market_base import MarketFunction
 from ...core.symbols import p, q
-from .types import EquilibriumResult
-from .validation import validate_market_functions
 
 
 def solve_equilibrium(
-    demand: MarketFunction, supply: MarketFunction, params: Optional[ParameterDict] = None
-) -> Optional[Tuple[float, float]]:
-    """Solve for market equilibrium price and quantity."""
+    demand: MarketFunction, supply: MarketFunction
+) -> Optional[Tuple[sp.Expr, sp.Expr, Union[sp.Eq, sp.Rel]]]:
+    """Solve for market equilibrium price and quantity symbolically."""
     try:
-        # Validate inputs
-        is_valid, error_msg = validate_market_functions(demand, supply, params)
-        if not is_valid:
-            raise ValueError(error_msg)
+        # Get demand and supply expressions
+        demand_expr = sp.solve(demand.equation.equation, q)[0]
+        supply_expr = sp.solve(supply.equation.equation, q)[0]
 
-        # Get equations
-        demand_eq = demand.equation.equation
-        supply_eq = supply.equation.equation
+        # Calculate inverse demand function as an equation
+        inverse_demand_rhs = sp.solve(sp.Eq(q, demand_expr), p)[0]
+        inverse_demand = sp.Eq(p, inverse_demand_rhs)
 
-        # Solve system of equations
-        solution = sp.solve([demand_eq, supply_eq], (p, q))
+        # Create equilibrium equation by setting demand = supply
+        eq = sp.Eq(demand_expr, supply_expr)
 
-        if not solution:
-            return None
+        # Solve for price
+        eq_price = sp.solve(eq, p)[0]
 
-        # Get first solution and convert to float
-        eq_price = float(sp.N(solution[0][0]))
-        eq_quantity = float(sp.N(solution[0][1]))
+        # Substitute back to get quantity
+        eq_quantity = demand_expr.subs(p, eq_price)
 
-        return eq_price, eq_quantity
+        # Simplify expressions
+        eq_price = sp.simplify(eq_price)
+        eq_quantity = sp.simplify(eq_quantity)
+
+        return eq_price, eq_quantity, inverse_demand
 
     except Exception as e:
         raise ValueError(f"Error solving equilibrium: {str(e)}")

@@ -4,7 +4,6 @@ from typing import Optional, Dict, Union
 import sympy as sp
 from IPython.display import display, HTML, Math
 from ..core.equation_types import TypedEquation
-from ..core.market_base import MarketFunction
 from ..market.equilibrium.types import EquilibriumResult
 
 
@@ -23,11 +22,8 @@ def display_equilibrium(
         print("No equilibrium data to display.")
         return
 
-    # Create a new dictionary for the formatted results
-    formatted_results = {}
-
     # Mapping of underscored keys to display labels
-    key_labels = {
+    key_labels: Dict[str, str] = {
         "Equilibrium_Price": "Equilibrium Price",
         "Equilibrium_Quantity": "Equilibrium Quantity",
         "Consumer_Surplus": "Consumer Surplus",
@@ -40,35 +36,54 @@ def display_equilibrium(
         "Supply_Type": "Supply Type",
     }
 
+    # Create a new dictionary for the formatted results
+    formatted_results: Dict[str, str] = {}
+
     for key, value in equilibrium_results.items():
-        if parameter_subs and isinstance(value, (sp.Expr, sp.Equality)):
-            # Substitute values
-            substituted_value = value.subs(parameter_subs)
-            if key in ["Demand_Equation", "Supply_Equation"]:
-                formatted_results[key] = sp.latex(substituted_value)
-            else:
-                # Evaluate numerically
+        # Handle symbolic expressions
+        if isinstance(value, sp.Expr):
+            if parameter_subs:
                 try:
-                    numeric_value = float(sp.N(substituted_value))
+                    # Try numerical substitution
+                    numeric_value = sp.N(value.subs(parameter_subs))
                     formatted_results[key] = f"{numeric_value:.2f}"
-                except (ValueError, TypeError, AttributeError):
-                    # If evaluation fails, keep symbolic
-                    formatted_results[key] = sp.latex(substituted_value)
+                except:
+                    # If substitution fails, show symbolic form
+                    formatted_results[key] = sp.latex(value)
+            else:
+                # Show symbolic form
+                formatted_results[key] = sp.latex(value)
+
+        # Handle TypedEquation objects
+        elif isinstance(value, TypedEquation):
+            if parameter_subs:
+                try:
+                    # Try numerical substitution in equation
+                    subbed_eq = value.equation.subs(parameter_subs)
+                    formatted_results[key] = sp.latex(subbed_eq)
+                except:
+                    # If substitution fails, show symbolic form
+                    formatted_results[key] = sp.latex(value.equation)
+            else:
+                # Show symbolic form
+                formatted_results[key] = sp.latex(value.equation)
+
+        # Handle other types (strings, None)
         else:
-            formatted_results[key] = sp.latex(value) if isinstance(value, (sp.Expr, sp.Equality)) else str(value)
+            formatted_results[key] = str(value)
 
     # Display header
     display(
         HTML(
             """
-    <div style="margin: 20px;">
-        <h3 style="text-align: center; margin-bottom: 15px;">Market Equilibrium Results</h3>
-        <table style="border-collapse: collapse; width: 100%; margin: auto;">
-    """
+        <div style="margin: 20px;">
+            <h3 style="text-align: center; margin-bottom: 15px;">Market Equilibrium Results</h3>
+            <table style="border-collapse: collapse; width: 100%; margin: auto;">
+        """
         )
     )
 
-    # Define display order with new keys
+    # Define display order
     display_order = [
         "Equilibrium_Price",
         "Equilibrium_Quantity",
@@ -80,11 +95,16 @@ def display_equilibrium(
         "Inverse_Demand_Function",
     ]
 
-    # Display each row separately to allow Math rendering
+    # Display each row
     for key in display_order:
         if key in formatted_results:
             value = formatted_results[key]
             display_label = key_labels.get(key, key)
+
+            # Skip None values
+            if value == "None":
+                continue
+
             # Display row start
             display(
                 HTML(
@@ -94,7 +114,7 @@ def display_equilibrium(
                         {display_label}:
                     </td>
                     <td style="padding: 12px; text-align: left;">
-            """
+                """
                 )
             )
 
@@ -104,12 +124,32 @@ def display_equilibrium(
             # Display row end
             display(HTML("</td></tr>"))
 
+    # Add function types at the bottom
+    for key in ["Demand_Type", "Supply_Type"]:
+        if key in formatted_results:
+            display_label = key_labels.get(key, key)
+            value = formatted_results[key]
+            display(
+                HTML(
+                    f"""
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px; text-align: right; width: 40%; font-weight: bold; color: #444;">
+                        {display_label}:
+                    </td>
+                    <td style="padding: 12px; text-align: left;">
+                        {value}
+                    </td>
+                </tr>
+                """
+                )
+            )
+
     # Close table
     display(
         HTML(
             """
-        </table>
-    </div>
-    """
+            </table>
+        </div>
+        """
         )
     )
