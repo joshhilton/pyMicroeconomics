@@ -28,3 +28,27 @@ def pytest_collection_modifyitems(items: list[Item]):
 def unit_test_mocks(monkeypatch: None):
     """Include Mocks here to execute all commands offline and fast."""
     pass
+
+
+@pytest.fixture
+def sample_market_data():
+    """Fixture providing sample market equilibrium data for testing."""
+    return {
+        "demand_params": {"a": 100, "b": 2},
+        "supply_params": {"c": 20, "d": 3},
+        "expected_price": 16.0,
+        "expected_quantity": 68.0,
+    }
+
+
+def pytest_configure(config):
+    """Add custom markers to pytest configuration."""
+    custom_markers = [
+        "market: tests for market equilibrium functionality",
+        "demand: tests for demand curve functionality",
+        "supply: tests for supply curve functionality",
+        "visualization: tests for plotting and display functionality",
+        "optimization: tests for parameter optimization functionality",
+    ]
+    for marker in custom_markers:
+        config.addinivalue_line("markers", marker)

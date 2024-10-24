@@ -1,8 +1,8 @@
 """Functions for defining various demand curves using sympy equations."""
 
 import sympy as sp
-from .symbols import p, q, a, b
-from .equation_types import TypedEquation
+from ..core.symbols import p, q, a, b
+from ..core.equation_types import TypedEquation
 
 
 def linear_demand(a_param=None, b_param=None):

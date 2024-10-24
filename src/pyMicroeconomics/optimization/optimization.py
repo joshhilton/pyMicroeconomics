@@ -5,7 +5,7 @@ Module for optimizing economic parameters to maximize total surplus in market eq
 import sympy as sp
 import numpy as np
 import scipy.optimize as opt
-from .symbols import p, q
+from ..core.symbols import p, q
 
 
 def optimize_parameters(equilibrium_results):

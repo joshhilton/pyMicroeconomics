@@ -1,8 +1,8 @@
 """Functions for defining various supply curves using sympy equations."""
 
 import sympy as sp
-from .symbols import p, q, c, d
-from .equation_types import TypedEquation
+from ..core.symbols import p, q, c, d
+from ..core.equation_types import TypedEquation
 
 
 def linear_supply(c_param=None, d_param=None):
