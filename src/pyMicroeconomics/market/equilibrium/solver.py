@@ -16,7 +16,8 @@ def solve_equilibrium(
 
         # Calculate inverse demand function as an equation
         inverse_demand_rhs = sp.solve(sp.Eq(q, demand_expr), p)[0]
-        inverse_demand = sp.Eq(p, inverse_demand_rhs)
+        # Don't wrap in Eq(), just return the expression
+        inverse_demand = inverse_demand_rhs
 
         # Create equilibrium equation by setting demand = supply
         eq = sp.Eq(demand_expr, supply_expr)

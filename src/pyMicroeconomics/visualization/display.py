@@ -36,13 +36,15 @@ def display_equilibrium(
         "Supply_Type": "Supply Type",
     }
 
-    # Create a new dictionary for the formatted results
     formatted_results: Dict[str, str] = {}
 
     for key, value in equilibrium_results.items():
         # Handle symbolic expressions
         if isinstance(value, sp.Expr):
-            if parameter_subs:
+            if key == "Inverse_Demand_Function":
+                # Add the "p = " prefix for inverse demand function
+                formatted_results[key] = f"p = {sp.latex(value)}"
+            elif parameter_subs:
                 try:
                     # Try numerical substitution
                     numeric_value = sp.N(value.subs(parameter_subs))
