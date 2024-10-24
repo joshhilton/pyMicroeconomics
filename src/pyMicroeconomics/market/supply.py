@@ -1,79 +1,111 @@
-"""Functions for defining various supply curves using sympy equations."""
+from __future__ import annotations
 
 import sympy as sp
-from ..core.symbols import p, q, c, d
+from typing import Optional
+from ..core.market_base import MarketFunction, ParameterDict
 from ..core.equation_types import TypedEquation
+from ..core.symbols import p, q, c, d
 
 
-def linear_supply(c_param=None, d_param=None):
+def linear_supply(c_param: Optional[float] = None, d_param: Optional[float] = None) -> MarketFunction:
     """Create linear supply curve equation: q = c + d*p
 
     Args:
-        c_param: Intercept parameter (default: symbolic 'c')
-        d_param: Slope parameter (default: symbolic 'd')
+        c_param: Intercept parameter (minimum quantity supplied at p=0)
+        d_param: Slope parameter (should be positive)
 
     Returns:
-        sympy.Eq: Linear supply equation
+        MarketFunction: Linear supply function
+
+    Examples:
+        >>> supply = linear_supply(20, 3)  # q = 20 + 3p
+        >>> quantity = supply.evaluate(price=10)  # Evaluate at p = 10
+        >>> slope = supply.get_slope(price=10)  # Get slope at p = 10
     """
-    if c_param is None:
-        c_param = c
-    if d_param is None:
-        d_param = d
-    eq = sp.Eq(q, c_param + d_param * p)
-    return TypedEquation(eq, "linear_supply")
+    params: ParameterDict = {}
+    if c_param is not None:
+        params[c] = c_param
+    if d_param is not None:
+        params[d] = d_param
+
+    eq = TypedEquation(sp.Eq(q, c + d * p), "linear_supply")
+    return MarketFunction(eq, "linear_supply", params)
 
 
-def power_supply(c_param=None, d_param=None):
-    """Create power supply curve equation: q = exp(c)*p**d.
-    This is equivalent to log-log form ln(q) = c + d*ln(p), which is common in econometrics.
+def power_supply(c_param: Optional[float] = None, d_param: Optional[float] = None) -> MarketFunction:
+    """Create power supply curve equation: q = c*p^d
+
+    This is equivalent to log-log form ln(q) = ln(c) + d*ln(p), common in econometrics.
 
     Args:
-        c_param: Scale parameter (default: symbolic 'c')
-        d_param: Supply elasticity of demand (default: symbolic 'd')
+        c_param: Scale parameter (should be positive)
+        d_param: Price elasticity of supply (should be positive)
 
     Returns:
-        sympy.Eq: Power supply equation
+        MarketFunction: Power supply function
+
+    Examples:
+        >>> supply = power_supply(1, 1.5)  # q = p^1.5
+        >>> quantity = supply.evaluate(price=10)  # Evaluate at p = 10
+        >>> slope = supply.get_slope(price=10)  # Get slope at p = 10
     """
-    if c_param is None:
-        c_param = c
-    if d_param is None:
-        d_param = d
-    eq = sp.Eq(q, c_param * p**d_param)
-    return TypedEquation(eq, "power_supply")
+    params: ParameterDict = {}
+    if c_param is not None:
+        params[c] = c_param
+    if d_param is not None:
+        params[d] = d_param
+
+    eq = TypedEquation(sp.Eq(q, c * p**d), "power_supply")
+    return MarketFunction(eq, "power_supply", params)
 
 
-def exponential_supply(c_param=None, d_param=None):
-    """Create exponential supply curve equation: q = exp(c*p+d).
-    This is equivalent to the semi-log form ln(q) = c*p + d, which is common in econometrics.
+def exponential_supply(c_param: Optional[float] = None, d_param: Optional[float] = None) -> MarketFunction:
+    """Create exponential supply curve equation: q = exp(c*p + d)
+
+    This is equivalent to semi-log form ln(q) = c*p + d, common in econometrics.
 
     Args:
-        c_param: Intercept parameter (default: symbolic 'c')
-        d_param: Log coefficient (default: symbolic 'd')
+        c_param: Price sensitivity parameter (should be positive)
+        d_param: Scale parameter
 
     Returns:
-        sympy.Eq: Exponential supply equation
+        MarketFunction: Exponential supply function
+
+    Examples:
+        >>> supply = exponential_supply(0.05, 0)  # q = exp(0.05*p)
+        >>> quantity = supply.evaluate(price=10)  # Evaluate at p = 10
+        >>> slope = supply.get_slope(price=10)  # Get slope at p = 10
     """
-    if c_param is None:
-        c_param = c
-    if d_param is None:
-        d_param = d
-    eq = sp.Eq(q, sp.exp(c_param * p + d_param))
-    return TypedEquation(eq, "exponential_supply")
+    params: ParameterDict = {}
+    if c_param is not None:
+        params[c] = c_param
+    if d_param is not None:
+        params[d] = d_param
+
+    eq = TypedEquation(sp.Eq(q, sp.exp(c * p + d)), "exponential_supply")
+    return MarketFunction(eq, "exponential_supply", params)
 
 
-def quadratic_supply(c_param=None, d_param=None):
+def quadratic_supply(c_param: Optional[float] = None, d_param: Optional[float] = None) -> MarketFunction:
     """Create quadratic supply curve equation: q = c + d*p^2
 
     Args:
-        c_param: Intercept parameter (default: symbolic 'c')
-        d_param: Quadratic coefficient (default: symbolic 'd')
+        c_param: Minimum quantity parameter (quantity at p=0)
+        d_param: Price sensitivity parameter (should be positive)
 
     Returns:
-        sympy.Eq: Quadratic supply equation
+        MarketFunction: Quadratic supply function
+
+    Examples:
+        >>> supply = quadratic_supply(0, 0.04)  # q = 0.04*p^2
+        >>> quantity = supply.evaluate(price=10)  # Evaluate at p = 10
+        >>> slope = supply.get_slope(price=10)  # Get slope at p = 10
     """
-    if c_param is None:
-        c_param = c
-    if d_param is None:
-        d_param = d
-    eq = sp.Eq(q, c_param + d_param * p**2)
-    return TypedEquation(eq, "quadratic_supply")
+    params: ParameterDict = {}
+    if c_param is not None:
+        params[c] = c_param
+    if d_param is not None:
+        params[d] = d_param
+
+    eq = TypedEquation(sp.Eq(q, c + d * p**2), "quadratic_supply")
+    return MarketFunction(eq, "quadratic_supply", params)

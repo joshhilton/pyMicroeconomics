@@ -3,8 +3,9 @@
 from typing import Optional, Dict, Union
 import sympy as sp
 from IPython.display import display, HTML, Math
-from core.equation_types import TypedEquation
-from market.equilibrium import EquilibriumResult
+from ..core.equation_types import TypedEquation
+from ..core.market_base import MarketFunction
+from ..market.equilibrium.types import EquilibriumResult
 
 
 def display_equilibrium(

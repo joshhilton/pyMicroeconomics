@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from ipywidgets import widgets
 from IPython.display import display
-from core.symbols import p, q
-from market.equilibrium import EquilibriumResult
+from ..core.symbols import p, q
+from ..market.equilibrium.types import EquilibriumResult
 
 
 def plot_equilibrium(equilibrium_results: Optional[EquilibriumResult]) -> None:

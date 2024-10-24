@@ -5,6 +5,7 @@ from __future__ import annotations
 __version__ = "0.0.5"
 
 from .core.equation_types import TypedEquation
+from .core.market_base import MarketFunction
 
 from .market.demand import (
     linear_demand,
@@ -20,8 +21,7 @@ from .market.supply import (
     quadratic_supply,
 )
 
-from .market.equilibrium import market_equilibrium
+# Update equilibrium import
+from .market.equilibrium.main import market_equilibrium
 from .visualization.display import display_equilibrium
-
-# from .optimization import optimize_parameters
 from .visualization.plotting import plot_equilibrium

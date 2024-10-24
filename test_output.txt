@@ -1,0 +1,48 @@
+============================= test session starts ==============================
+collecting ... collected 21 items
+
+tests/unit/test_demand.py::test_linear_demand PASSED                     [  4%]
+tests/unit/test_demand.py::test_power_demand PASSED                      [  9%]
+tests/unit/test_demand.py::test_exponential_demand PASSED                [ 14%]
+tests/unit/test_demand.py::test_quadratic_demand PASSED                  [ 19%]
+tests/unit/test_demand.py::test_demand_parameter_validation PASSED       [ 23%]
+tests/unit/test_demand.py::test_demand_evaluation_errors PASSED          [ 28%]
+tests/unit/test_equation_types.py::test_typed_equation_creation PASSED   [ 33%]
+tests/unit/test_equation_types.py::test_typed_equation_substitution PASSED [ 38%]
+tests/unit/test_equation_types.py::test_free_symbols PASSED              [ 42%]
+tests/unit/test_market_base.py::test_market_function_creation PASSED     [ 47%]
+tests/unit/test_market_base.py::test_market_function_with_parameters PASSED [ 52%]
+tests/unit/test_market_base.py::test_market_function_slope PASSED        [ 57%]
+tests/unit/test_market_base.py::test_invalid_equation PASSED             [ 61%]
+tests/unit/test_market_base.py::test_market_function_parameter_update PASSED [ 66%]
+tests/unit/test_market_base.py::test_market_function_float_parameters PASSED [ 71%]
+tests/unit/test_supply.py::test_linear_supply PASSED                     [ 76%]
+tests/unit/test_supply.py::test_power_supply PASSED                      [ 80%]
+tests/unit/test_supply.py::test_exponential_supply PASSED                [ 85%]
+tests/unit/test_supply.py::test_quadratic_supply PASSED                  [ 90%]
+tests/unit/test_supply.py::test_supply_parameter_validation PASSED       [ 95%]
+tests/unit/test_supply.py::test_supply_evaluation_errors PASSED          [100%]/home/vscode/.local/lib/python3.10/site-packages/coverage/report_core.py:116: CoverageWarning: Couldn't parse '/workspaces/pyMicroeconomics/src/pyMicroeconomics/demand.py': No source for code: '/workspaces/pyMicroeconomics/src/pyMicroeconomics/demand.py'. (couldnt-parse)
+  coverage._warn(msg, slug="couldnt-parse")
+/home/vscode/.local/lib/python3.10/site-packages/coverage/report_core.py:116: CoverageWarning: Couldn't parse '/workspaces/pyMicroeconomics/src/pyMicroeconomics/display.py': No source for code: '/workspaces/pyMicroeconomics/src/pyMicroeconomics/display.py'. (couldnt-parse)
+  coverage._warn(msg, slug="couldnt-parse")
+/home/vscode/.local/lib/python3.10/site-packages/coverage/report_core.py:116: CoverageWarning: Couldn't parse '/workspaces/pyMicroeconomics/src/pyMicroeconomics/equation_types.py': No source for code: '/workspaces/pyMicroeconomics/src/pyMicroeconomics/equation_types.py'. (couldnt-parse)
+  coverage._warn(msg, slug="couldnt-parse")
+/home/vscode/.local/lib/python3.10/site-packages/coverage/report_core.py:116: CoverageWarning: Couldn't parse '/workspaces/pyMicroeconomics/src/pyMicroeconomics/equilibrium.py': No source for code: '/workspaces/pyMicroeconomics/src/pyMicroeconomics/equilibrium.py'. (couldnt-parse)
+  coverage._warn(msg, slug="couldnt-parse")
+/home/vscode/.local/lib/python3.10/site-packages/coverage/report_core.py:116: CoverageWarning: Couldn't parse '/workspaces/pyMicroeconomics/src/pyMicroeconomics/market/equilibrium.py': No source for code: '/workspaces/pyMicroeconomics/src/pyMicroeconomics/market/equilibrium.py'. (couldnt-parse)
+  coverage._warn(msg, slug="couldnt-parse")
+/home/vscode/.local/lib/python3.10/site-packages/coverage/report_core.py:116: CoverageWarning: Couldn't parse '/workspaces/pyMicroeconomics/src/pyMicroeconomics/optimization.py': No source for code: '/workspaces/pyMicroeconomics/src/pyMicroeconomics/optimization.py'. (couldnt-parse)
+  coverage._warn(msg, slug="couldnt-parse")
+/home/vscode/.local/lib/python3.10/site-packages/coverage/report_core.py:116: CoverageWarning: Couldn't parse '/workspaces/pyMicroeconomics/src/pyMicroeconomics/plotting.py': No source for code: '/workspaces/pyMicroeconomics/src/pyMicroeconomics/plotting.py'. (couldnt-parse)
+  coverage._warn(msg, slug="couldnt-parse")
+/home/vscode/.local/lib/python3.10/site-packages/coverage/report_core.py:116: CoverageWarning: Couldn't parse '/workspaces/pyMicroeconomics/src/pyMicroeconomics/supply.py': No source for code: '/workspaces/pyMicroeconomics/src/pyMicroeconomics/supply.py'. (couldnt-parse)
+  coverage._warn(msg, slug="couldnt-parse")
+/home/vscode/.local/lib/python3.10/site-packages/coverage/report_core.py:116: CoverageWarning: Couldn't parse '/workspaces/pyMicroeconomics/src/pyMicroeconomics/symbols.py': No source for code: '/workspaces/pyMicroeconomics/src/pyMicroeconomics/symbols.py'. (couldnt-parse)
+  coverage._warn(msg, slug="couldnt-parse")
+
+
+---------- coverage: platform linux, python 3.10.15-final-0 ----------
+Coverage XML written to file coverage.xml
+
+
+============================== 21 passed in 2.11s ==============================

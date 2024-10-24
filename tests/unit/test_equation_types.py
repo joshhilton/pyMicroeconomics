@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import pytest
 import sympy as sp
 from pyMicroeconomics.core.equation_types import TypedEquation
-from pyMicroeconomics.symbols import p, q
+from pyMicroeconomics.core.symbols import p, q
 
 
 def test_typed_equation_creation():
