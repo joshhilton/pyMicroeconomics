@@ -1,0 +1,23 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0 # Use the latest tag
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-toml
+    -   id: check-added-large-files
+-   repo: https://github.com/psf/black
+    rev: 24.4.2 # Use a recent version compatible with your config
+    hooks:
+    -   id: black
+        args: [--line-length=120] # Match pyproject.toml setting
+-   repo: https://github.com/PyCQA/flake8
+    rev: 7.1.0 # Use a recent version
+    hooks:
+    -   id: flake8
+        args: [--max-line-length=120, --select=F,E,W,B,B901,B902,B903, --ignore=E722,B001,W503,E203] # Match pyproject.toml settings
+        # You might need additional_dependencies if flake8 plugins are used
+        # additional_dependencies: [flake8-bugbear==23.5.9] # Example

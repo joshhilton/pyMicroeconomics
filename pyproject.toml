@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit_core>=3.8"]
+requires = ["flit_core>=3.8", "flit-scm>=1.7"]
 build-backend = "flit_core.buildapi"
 
 [project]
@@ -18,8 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 requires-python = ">=3.8.1"
-#dynamic = ["version"]
-version = "0.0.6"
+dynamic = ["version"]
 dependencies = [
     "sympy>=1.13",
     "numpy>=2.1.2",
@@ -50,6 +49,11 @@ test = [
     "pytest-github-actions-annotate-failures",
     "shellcheck-py==0.9.0.2",
 ]
+docs = [
+    "sphinx",
+    "sphinx-copybutton",
+    "sphinx-rtd-theme",
+]
 
 [project.urls]
 Documentation = "https://https://github.com/joshhilton/pyMicroeconomics/tree/main#readme"
@@ -58,6 +62,10 @@ Tracker = "https://https://github.com/joshhilton/pyMicroeconomics/issues"
 
 [tool.flit.module]
 name = "pyMicroeconomics"
+
+[tool.flit-scm]
+# Example: If your tags are not standard like v1.0.0, you might need configuration
+# module = "pyMicroeconomics" # If flit can't find the module automatically
 
 [tool.bandit]
 exclude_dirs = ["build", "dist", "tests", "scripts"]
